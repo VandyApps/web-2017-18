@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+    html,
+    body {
+        height: 100%;
+        margin: 0;
+    }
+
+    body {
+        background-image: url('https://placekitten.com/1082/1082');
+        background-size: cover;
+        text-align: center;
+        font-family: 'Comic Sans MS', sans-serif;
+    }
+
+    h1 {
+        color: white;
+        margin: 0;
+        transition: all 0.5s;
+    }
+
+    h1:hover {
+        font-size: 80px;
+        transform: rotate(-15deg);
+    }
+
+    .main {
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        height: 100%;
+        overflow: hidden;
+    }
+
+    .content {
+        margin: auto;
+        color: white;
+        text-align: center;
+    }
+</style>
+</head>
+
+<body>
+    <div class="main">
+        <div class="content">
+            <h1>Hello World</h1>
+            <p id="time-display">The time is: </p>
+        </div>
+
+    </div>
+    <script>
+        let timeDisplay = document.getElementById('time-display');
+
+        window.setInterval(() => {
+            timeDisplay.textContent = 'The time is ' + new Date().toString();
+        }, 500);
+    </script>
+
+</body>
+
+</html>
