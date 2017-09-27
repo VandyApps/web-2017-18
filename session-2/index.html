@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+</head>
+
+<body>
+    <ul id="todo-items">
+    </ul>
+    <form id="add-new-item">
+        <input type="text" id="new-item" />
+        <button type="submit">Add Item</button>
+    </form>
+
+    <script>
+        let addNewItem = document.querySelector('#add-new-item');
+        let newItemInput = document.querySelector('#new-item');
+        let todoItems = document.querySelector('#todo-items');
+
+        let todoArray = [];
+
+        let previousTodos = window.localStorage.getItem('todos');
+        if (previousTodos !== null) {
+            previousTodos = JSON.parse(previousTodos);
+            previousTodos.forEach(addItem);
+        }
+
+        function saveToStorage() {
+            window.localStorage.setItem('todos', JSON.stringify(todoArray));
+        }
+
+        function addItem(text) {
+            if (text.length === 0) {
+                return;
+            }
+
+            todoArray.push(text);
+            saveToStorage();
+            let newListItem = document.createElement('li');
+            newListItem.appendChild(document.createTextNode(text));
+
+            let removeButton = document.createElement('button');
+            removeButton.appendChild(document.createTextNode('X'));
+            removeButton.addEventListener('click', event => {
+                newListItem.parentElement.removeChild(newListItem);
+                todoArray = todoArray.filter(el => el !== text);
+                saveToStorage();
+            });
+            newListItem.appendChild(removeButton);
+
+            todoItems.appendChild(newListItem);
+
+        }
+
+        addNewItem.addEventListener('submit', event => {
+            event.preventDefault();
+            addItem(newItemInput.value);
+            newItemInput.value = '';
+        });
+    </script>
+</body>
+
+</html>
