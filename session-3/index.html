@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        #messages {
+            height: 500px;
+            width: 100%;
+            border: 1px solid black;
+            overflow-y: auto;
+            font-family: 'Comic Sans MS', sans-serif;
+            background-image: url('http://placekitten.com/1501/801');
+            background-size: cover;
+        }
+
+        .text-line {
+            padding: 4px;
+            background: rgba(255, 255, 255, 0.69);
+        }
+
+        .text-line:nth-child(odd) {
+            background: rgba(210, 210, 210, 0.69);
+        }
+
+        input, button {
+            margin-top: 8px;
+            font-size: 20px;
+            padding: 16px;
+            border-radius: 4px;
+            border: none;
+        }
+
+        input {
+            border: 1px solid #888;
+        }
+
+        button {
+            background: #6A6AA5; 
+            color: white;
+            border: 1px solid #6A6AA5;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="messages"></div>
+    <form id="command">
+        <input id="command-text"></input>
+        <button type="submit">Send</button>
+    </form>
+    <script>
+        let ws = new WebSocket('wss://chat-server-tispvswmhx.now.sh/chat');
+        ws.onmessage = msg => appendMessage(
+            JSON.parse(msg.data).content
+        );
+        ws.onopen = () => {
+            ws.send(JSON.stringify({ action: 'join', channel: 'main' }));
+            // ws.send(JSON.stringify({ action: 'send', channel: 'main', content: 'ayy lmao' }));
+        }
+
+        let commandTextElement = document.querySelector('#command-text');
+
+        document.querySelector("#command").onsubmit = event => {
+            event.preventDefault();
+            if (commandTextElement.value.trim() === '') {
+                return;
+            }
+            ws.send(JSON.stringify({
+                action: 'send',
+                channel: 'main',
+                content: commandTextElement.value
+            }));
+            commandTextElement.value = '';
+        };
+
+        let messagesElement = document.querySelector('#messages');
+
+        function appendMessage(text) {
+            if (text.length > 200) {
+                return;
+            }
+            let textLine = document.createElement('div');
+            textLine.classList.add('text-line');
+            textLine.appendChild(document.createTextNode(text));
+            messagesElement.appendChild(textLine);
+            messagesElement.scrollTop = messagesElement.scrollHeight;
+        }
+    </script>
+</body>
+
+</html>
