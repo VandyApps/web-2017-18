@@ -24,7 +24,11 @@ app.ws('/chat', (ws, res) => {
 			return;
 		}
 		if (msg.action === 'join' && msg.channel) {
-			let sub = bus.subscribe(msg.channel, event => ws.send(JSON.stringify(event)));
+			let sub = bus.subscribe(msg.channel, event => {
+				try {
+					ws.send(JSON.stringify(event))
+				} catch (ignored) { }
+			});
 			subscriptions.push(sub);
 		} else if (msg.action === 'send') {
 			let { action: undefined, ...copy } = msg;
