@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/16.0.0/umd/react.development.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/16.0.0/umd/react-dom.development.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.min.js"></script>
+</head>
+
+<body>
+    <div id="app"></div>
+    <script type="text/babel">
+        class App extends React.Component {
+            constructor(props) {
+                super(props);
+                this.state = { title: '', artist: '', genre: '', year: '', albums: [] };
+                this.updateAlbums();
+            }
+
+            updateField = property => event => {
+                this.setState({ [property]: event.target.value });
+            }
+
+            updateAlbums = () => {
+                fetch('https://va-albums.now.sh/list')
+                    .then(res => res.json())
+                    .then(res => this.setState({ albums: res }));
+            }
+
+            addAlbum = () => {
+                let title = window.encodeURIComponent(this.state.title);
+                let artist = window.encodeURIComponent(this.state.artist);
+                let genre = window.encodeURIComponent(this.state.genre);
+                let year = window.encodeURIComponent(this.state.year);
+
+                this.setState({ title: '', artist: '', genre: '', year: '' });
+                fetch(`https://va-albums.now.sh/add/${title}/${artist}/${genre}/${year}`)
+                    .then(this.updateAlbums);
+            }
+
+            render() {
+                return <div>
+                <table>
+                <tbody>
+                    <tr style={{ fontWeight: 'bold' }}>
+                        <td>Title</td>
+                        <td>Artist</td>
+                        <td>Genre</td>
+                        <td>Year</td>
+                    </tr>
+                    {this.state.albums.map(album => <tr key={album.title}>
+                            <td>{album.title}</td>
+                            <td>{album.artist}</td>
+                            <td>{album.genre}</td>
+                            <td>{album.year}</td>
+                        </tr>
+                    )}
+                    </tbody>
+                </table>
+                <input placeholder='Title' value={this.state.title} onChange={this.updateField('title')}/>
+                <input placeholder='Artist' value={this.state.artist} onChange={this.updateField('artist')}/>
+                <input placeholder='Genre' value={this.state.genre} onChange={this.updateField('genre')}/>
+                <input placeholder='Year' value={this.state.year} onChange={this.updateField('year')}/>
+                <button onClick={this.addAlbum}>Add album</button>
+                </div>
+            }
+        }
+
+        ReactDOM.render(
+            <App/>,
+            document.querySelector('#app')
+        );
+    </script>
+</body>
+
+</html>
